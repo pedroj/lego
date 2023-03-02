@@ -4,18 +4,18 @@ library(dplyr)
 # Read xml files
 parsed_xml <- list()
 for(i in 1970:2015){
-  file_name <- file.path("data-raw", paste0(i, ".xml"))
+  file_name <- file.path("/Users/pedro/Documents/Working/~RCode/MyRCode/LEGO/LEGO Sets_1970-2015/lego/data-raw", paste0(i, ".xml"))
   parsed_xml[[i]] <- xmlToDataFrame(xmlParse(file_name))
 }
 
 # Reduce list of xml data frames to one data frame
-lego_raw <- tbl_df(Reduce(function(...) merge(..., all=T), parsed_xml))
+lego_raw <- tibble::as_tibble(Reduce(function(...) merge(..., all=T), parsed_xml))
 
 # Filter raw data frame
 legosets <- lego_raw %>% 
-  filter(year >= 1970) %>% # Information on Legos before the 70s is too poor
-  filter(UKRetailPrice != "" | USRetailPrice != "" | 
-           CARetailPrice != "" | EURetailPrice != "") %>% # Each set should have a price in at least one currency
+ # filter(year >= 1970) %>% # Information on Legos before the 70s is too poor
+ # filter(UKRetailPrice != "" | USRetailPrice != "" | 
+ #          CARetailPrice != "" | EURetailPrice != "") %>% # Each set should have a price in at least one currency
   select(setID, number, name, year, theme, subtheme, pieces, minifigs, 
          imageURL, UKRetailPrice, USRetailPrice, CARetailPrice,
          EURetailPrice, packagingType, availability) %>% # Select only relevant columns
